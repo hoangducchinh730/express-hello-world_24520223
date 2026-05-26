@@ -8,13 +8,10 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # IMAGE_NAME sử dụng tên repo
   IMAGE_NAME: ${{ github.repository_owner }}/express-hello-world
 
 jobs:
-  # ============================================================================
   # JOB 1: DEPENDENCIES & TEST
-  # ============================================================================
   build-and-test:
     name: Build & Test
     runs-on: ubuntu-latest
@@ -37,14 +34,11 @@ jobs:
       - name: Run tests
         run: npm test
 
-  # ============================================================================
   # JOB 2: BUILD & PUSH DOCKER IMAGE
-  # ============================================================================
   build-and-push:
     name: Build and Push Docker Image
     needs: build-and-test
     runs-on: ubuntu-latest
-    # Chỉ build image và push khi code được merge/push vào nhánh main
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     permissions:
       contents: read
@@ -79,13 +73,9 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  # ============================================================================
-  # JOB 3: NOTIFICATION
-  # ============================================================================
   notify:
     name: Send Notification
     needs: [build-and-test, build-and-push]
-    # always() đảm bảo job này luôn chạy kể cả khi các job trước thất bại
     if: always()
     runs-on: ubuntu-latest
     steps:
